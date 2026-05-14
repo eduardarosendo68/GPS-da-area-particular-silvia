@@ -2,6 +2,8 @@
 
 Aplicativo web de **navegação por voz** para pessoas com deficiência visual, baseado na planta baixa do Colégio Estadual Professora Silva Ferreira de Brito (Ribeira do Pombal – BA).
 
+link do app : https://eduardarosendo68.github.io/GPS-da-area-particular-silvia/
+
 ---
 
 ## ✨ Funcionalidades
