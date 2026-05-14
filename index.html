@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a1628" />
+  <meta name="description" content="GPS Acessível – Colégio Estadual Professora Silva Ferreira de Brito" />
+  <title>GPS Escola – Silva Ferreira de Brito</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+    :root {
+      --bg: #0a1628;
+      --bg2: #111e38;
+      --card: #162240;
+      --accent: #00e5b0;
+      --accent2: #ffb800;
+      --danger: #ff4d6d;
+      --text: #e8f0fe;
+      --muted: #7b93c4;
+      --radius: 16px;
+      --font: 'Atkinson Hyperlegible', sans-serif;
+      --mono: 'Space Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 18px;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--bg2);
+      padding: 16px 20px 12px;
+      text-align: center;
+      border-bottom: 2px solid var(--accent);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 {
+      font-family: var(--mono);
+      font-size: 1rem;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    header p {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* ── MAIN ── */
+    main {
+      padding: 20px 16px 100px;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── BIG MIC BUTTON ── */
+    .mic-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 28px 20px;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 2px solid transparent;
+      transition: border-color 0.3s;
+    }
+    .mic-section.listening {
+      border-color: var(--danger);
+      animation: pulse-border 1s infinite;
+    }
+    @keyframes pulse-border {
+      0%, 100% { border-color: var(--danger); }
+      50% { border-color: rgba(255,77,109,0.3); }
+    }
+
+    .mic-btn {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 4px solid var(--accent);
+      background: var(--bg);
+      color: var(--accent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .mic-btn:active { transform: scale(0.93); }
+    .mic-btn.listening {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #fff;
+      animation: pulse-mic 1s infinite;
+    }
+    @keyframes pulse-mic {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,109,0.5); }
+      50% { box-shadow: 0 0 0 20px rgba(255,77,109,0); }
+    }
+    .mic-btn svg { width: 44px; height: 44px; }
+
+    .mic-label {
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text);
+    }
+    .mic-hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    .transcript-box {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: var(--accent2);
+      min-height: 40px;
+      width: 100%;
+      text-align: center;
+      font-style: italic;
+      display: none;
+    }
+    .transcript-box.visible { display: block; }
+
+    /* ── DIRECTIONS BOX ── */
+    .directions-section {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .directions-section.visible { display: flex; }
+
+    .dir-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .dir-header .icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 1.3rem;
+    }
+    .dir-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .dir-header p {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .steps-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+    .step-num {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--accent);
+      background: rgba(0,229,176,0.1);
+      border-radius: 6px;
+      padding: 2px 8px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .repeat-btn {
+      margin-top: 4px;
+      background: rgba(0,229,176,0.12);
+      border: 2px solid var(--accent);
+      border-radius: 10px;
+      color: var(--accent);
+      font-size: 1rem;
+      font-family: var(--font);
+      font-weight: 700;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .repeat-btn:active { background: rgba(0,229,176,0.25); }
+
+    /* ── LOCATION GRID ── */
+    .locations-section h2 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 12px;
+      font-family: var(--mono);
+    }
+    .loc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .loc-btn {
+      background: var(--card);
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 14px 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .loc-btn:active { transform: scale(0.96); }
+    .loc-btn:hover, .loc-btn:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+    .loc-btn .emoji { font-size: 1.5rem; display: block; margin-bottom: 6px; }
+    .loc-btn .name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      display: block;
+    }
+    .loc-btn .sub {
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ── MAP ── */
+    .map-section {
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .map-section h2 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      padding: 14px 16px 10px;
+      font-family: var(--mono);
+    }
+    #school-map {
+      width: 100%;
+      display: block;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--bg2);
+      border-top: 1px solid rgba(0,229,176,0.2);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .status-dot.inactive { background: var(--muted); }
+
+    /* ── SPEAKING INDICATOR ── */
+    .speaking-badge {
+      display: none;
+      position: fixed;
+      top: 80px; left: 50%; transform: translateX(-50%);
+      background: var(--accent2);
+      color: #000;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 6px 16px;
+      border-radius: 20px;
+      z-index: 200;
+      gap: 6px;
+      align-items: center;
+    }
+    .speaking-badge.visible { display: flex; }
+
+    /* ── FOCUS VISIBLE ── */
+    *:focus-visible {
+      outline: 3px solid var(--accent2);
+      outline-offset: 3px;
+    }
+  </style>
+</head>
+<body>
+
+<header role="banner">
+  <h1>📍 GPS Escolar</h1>
+  <p>Col. Est. Professora Silva Ferreira de Brito</p>
+</header>
+
+<div class="speaking-badge" id="speaking-badge" aria-live="polite">
+  🔊 Falando…
+</div>
+
+<main role="main">
+
+  <!-- MIC SECTION -->
+  <section class="mic-section" id="mic-section" aria-label="Controle de voz">
+    <button
+      class="mic-btn"
+      id="mic-btn"
+      aria-label="Pressione para falar o destino"
+      aria-pressed="false"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 1a4 4 0 0 1 4 4v6a4 4 0 0 1-8 0V5a4 4 0 0 1 4-4zm0 2a2 2 0 0 0-2 2v6a2 2 0 0 0 4 0V5a2 2 0 0 0-2-2zm8 8a1 1 0 0 1 1 1 9 9 0 0 1-8 8.94V23h2a1 1 0 0 1 0 2H9a1 1 0 0 1 0-2h2v-2.06A9 9 0 0 1 3 12a1 1 0 0 1 2 0 7 7 0 0 0 14 0 1 1 0 0 1 1-1z"/>
+      </svg>
+    </button>
+    <p class="mic-label" id="mic-label">Toque para falar o destino</p>
+    <p class="mic-hint">Diga o nome do lugar que quer ir<br>(ex: "sala de aula 3", "banheiro", "diretoria")</p>
+    <div class="transcript-box" id="transcript-box" aria-live="polite"></div>
+  </section>
+
+  <!-- DIRECTIONS -->
+  <section class="directions-section" id="directions-section" aria-label="Instruções de navegação" aria-live="assertive">
+    <div class="dir-header">
+      <div class="icon" id="dest-icon" aria-hidden="true">📍</div>
+      <div>
+        <h2 id="dest-name">Destino</h2>
+        <p id="dest-dist"></p>
+      </div>
+    </div>
+    <ol class="steps-list" id="steps-list" aria-label="Passos para chegar ao destino"></ol>
+    <button class="repeat-btn" id="repeat-btn" aria-label="Repetir instruções em voz alta">
+      🔊 Ouvir novamente
+    </button>
+  </section>
+
+  <!-- LOCATION GRID -->
+  <section class="locations-section" aria-label="Escolha um local">
+    <h2>Locais da Escola</h2>
+    <div class="loc-grid" role="list" id="loc-grid"></div>
+  </section>
+
+  <!-- MAP -->
+  <section class="map-section" aria-label="Mapa da escola">
+    <h2>Mapa da Escola</h2>
+    <svg id="school-map" viewBox="0 0 400 520" xmlns="http://www.w3.org/2000/svg"
+         role="img" aria-label="Planta baixa do colégio">
+      <defs>
+        <style>
+          .room { fill: #162240; stroke: #00e5b0; stroke-width: 1.2; }
+          .room-hl { fill: #003d30; stroke: #00e5b0; stroke-width: 2; }
+          .room-label { fill: #7b93c4; font-size: 7px; font-family: 'Space Mono', monospace; text-anchor: middle; dominant-baseline: middle; }
+          .room-label-hl { fill: #00e5b0; font-size: 7px; font-family: 'Space Mono', monospace; text-anchor: middle; dominant-baseline: middle; font-weight: bold; }
+          .wall { fill: #0a1628; stroke: #1e3a5f; stroke-width: 1; }
+          .road { fill: #07101f; }
+          .road-label { fill: #3d5a8a; font-size: 7px; text-anchor: middle; font-family: sans-serif; }
+          .entry-arrow { fill: #ffb800; }
+          .person { fill: #ffb800; }
+          .corridor { fill: rgba(0,229,176,0.05); stroke: rgba(0,229,176,0.15); stroke-width: 0.8; }
+        </style>
+      </defs>
+
+      <!-- Background -->
+      <rect width="400" height="520" fill="#07101f"/>
+
+      <!-- Roads labels -->
+      <text x="200" y="508" class="road-label">RUA JOÃO FERNANDES GAMA (Sul)</text>
+      <text x="12" y="260" class="road-label" transform="rotate(-90,12,260)">RUA SILVA BRITO (Oeste)</text>
+      <text x="390" y="260" class="road-label" transform="rotate(90,390,260)">RUA SALUSTIANO BARRETO (Leste)</text>
+      <text x="200" y="10" class="road-label">NORTE</text>
+
+      <!-- School boundary -->
+      <rect x="28" y="18" width="344" height="470" rx="4" fill="#0f1e36" stroke="#1e3a5f" stroke-width="1.5"/>
+
+      <!-- ── BLOCO ADMINISTRATIVO (topo) ── -->
+      <!-- Lab Informática -->
+      <rect id="map-informatica" x="32" y="22" width="60" height="48" class="room" data-loc="informatica"/>
+      <text x="62" y="42" class="room-label">Lab.</text>
+      <text x="62" y="51" class="room-label">Inform.</text>
+
+      <!-- Depósito/Copa -->
+      <rect id="map-deposito" x="92" y="22" width="36" height="48" class="room" data-loc="deposito"/>
+      <text x="110" y="46" class="room-label">Copa/</text>
+      <text x="110" y="54" class="room-label">Dep.</text>
+
+      <!-- Secretaria -->
+      <rect id="map-secretaria" x="128" y="22" width="58" height="48" class="room" data-loc="secretaria"/>
+      <text x="157" y="46" class="room-label">Secre-</text>
+      <text x="157" y="54" class="room-label">taria</text>
+
+      <!-- Diretoria -->
+      <rect id="map-diretoria" x="186" y="22" width="58" height="48" class="room" data-loc="diretoria"/>
+      <text x="215" y="42" class="room-label">Dire-</text>
+      <text x="215" y="51" class="room-label">toria</text>
+
+      <!-- Banheiros admin -->
+      <rect id="map-banheiro-adm" x="244" y="22" width="36" height="48" class="room" data-loc="banheiro"/>
+      <text x="262" y="46" class="room-label">WC</text>
+
+      <!-- Sala de Professores -->
+      <rect id="map-professores" x="280" y="22" width="82" height="48" class="room" data-loc="professores"/>
+      <text x="321" y="42" class="room-label">Sala de</text>
+      <text x="321" y="51" class="room-label">Prof.</text>
+
+      <!-- Sala de Vídeo (left) -->
+      <rect id="map-video" x="32" y="110" width="60" height="50" class="room" data-loc="video"/>
+      <text x="62" y="131" class="room-label">Sala de</text>
+      <text x="62" y="140" class="room-label">Vídeo</text>
+
+      <!-- Corredor horizontal topo -->
+      <rect x="32" y="70" width="330" height="18" class="corridor"/>
+      <text x="197" y="79" class="room-label">— passarela —</text>
+
+      <!-- PÁTIO CENTRAL (2 blocos) -->
+      <rect x="140" y="90" width="100" height="280" rx="2" fill="#0d1a2e" stroke="#1e3a5f" stroke-width="1"/>
+      <text x="190" y="220" class="room-label">PÁTIO</text>
+      <text x="190" y="230" class="room-label">DESCOB.</text>
+
+      <!-- ── BLOCO ESQUERDO – Salas 04-06 ── -->
+      <!-- SA 06 -->
+      <rect id="map-sala6" x="32" y="160" width="100" height="52" class="room" data-loc="sala6"/>
+      <text x="82" y="186" class="room-label">Sala 06</text>
+      <!-- SA 05 -->
+      <rect id="map-sala5" x="32" y="212" width="100" height="52" class="room" data-loc="sala5"/>
+      <text x="82" y="238" class="room-label">Sala 05</text>
+      <!-- SA 04 -->
+      <rect id="map-sala4" x="32" y="264" width="100" height="52" class="room" data-loc="sala4"/>
+      <text x="82" y="290" class="room-label">Sala 04</text>
+      <!-- SA 03 -->
+      <rect id="map-sala3" x="32" y="316" width="100" height="52" class="room" data-loc="sala3"/>
+      <text x="82" y="342" class="room-label">Sala 03</text>
+
+      <!-- WC + DML esquerdo -->
+      <rect id="map-banheiro-esq" x="32" y="368" width="50" height="48" class="room" data-loc="banheiro"/>
+      <text x="57" y="392" class="room-label">WC</text>
+      <rect x="82" y="368" width="50" height="48" class="room"/>
+      <text x="107" y="392" class="room-label">DML</text>
+
+      <!-- SA 02 -->
+      <rect id="map-sala2" x="32" y="416" width="100" height="52" class="room" data-loc="sala2"/>
+      <text x="82" y="442" class="room-label">Sala 02</text>
+
+      <!-- ── BLOCO DIREITO – Salas 07-11 ── -->
+      <!-- SA 07 -->
+      <rect id="map-sala7" x="248" y="160" width="104" height="52" class="room" data-loc="sala7"/>
+      <text x="300" y="186" class="room-label">Sala 07</text>
+      <!-- SA 08 -->
+      <rect id="map-sala8" x="248" y="212" width="104" height="52" class="room" data-loc="sala8"/>
+      <text x="300" y="238" class="room-label">Sala 08</text>
+      <!-- SA 09 -->
+      <rect id="map-sala9" x="248" y="264" width="104" height="52" class="room" data-loc="sala9"/>
+      <text x="300" y="290" class="room-label">Sala 09</text>
+      <!-- SA 10 -->
+      <rect id="map-sala10" x="248" y="316" width="104" height="52" class="room" data-loc="sala10"/>
+      <text x="300" y="342" class="room-label">Sala 10</text>
+
+      <!-- WC + DML direito -->
+      <rect id="map-banheiro-dir" x="248" y="368" width="52" height="48" class="room" data-loc="banheiro"/>
+      <text x="274" y="392" class="room-label">WC</text>
+      <rect x="300" y="368" width="52" height="48" class="room"/>
+      <text x="326" y="392" class="room-label">DML</text>
+
+      <!-- SA 11 -->
+      <rect id="map-sala11" x="248" y="416" width="104" height="52" class="room" data-loc="sala11"/>
+      <text x="300" y="442" class="room-label">Sala 11</text>
+
+      <!-- SA 01 (central, sul) -->
+      <rect id="map-sala1" x="140" y="416" width="100" height="52" class="room" data-loc="sala1"/>
+      <text x="190" y="442" class="room-label">Sala 01</text>
+
+      <!-- ENTRADA -->
+      <polygon points="175,468 225,468 215,480 185,480" fill="#ffb800" opacity="0.8"/>
+      <text x="200" y="492" style="fill:#ffb800;font-size:8px;text-anchor:middle;font-family:monospace;">ENTRADA PRINCIPAL</text>
+
+      <!-- Person marker (animated) -->
+      <g id="person-marker" style="display:none">
+        <circle cx="200" cy="480" r="6" fill="#ffb800" opacity="0.9">
+          <animate attributeName="r" values="6;9;6" dur="1.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.9;0.4;0.9" dur="1.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="200" cy="480" r="3.5" fill="#ffb800"/>
+      </g>
+    </svg>
+  </section>
+
+</main>
+
+<div class="status-bar" role="status" aria-live="polite">
+  <div class="status-dot" id="status-dot"></div>
+  <span id="status-text">Pronto para navegar</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  DATA – Locais da escola + rotas a partir da entrada
+// ══════════════════════════════════════════════════════
+const LOCATIONS = [
+  {
+    id: 'secretaria',
+    name: 'Secretaria',
+    emoji: '🏢',
+    sub: 'Bloco Administrativo',
+    mapId: 'map-secretaria',
+    keywords: ['secretaria','secretária'],
+    steps: [
+      'Entre pela porta principal na Rua João Fernandes Gama.',
+      'Caminhe em linha reta por aproximadamente 30 passos.',
+      'Ao chegar no corredor principal, vire à direita.',
+      'Caminhe mais 15 passos. A Secretaria estará à sua esquerda.',
+      'Você chegou à Secretaria.'
+    ]
+  },
+  {
+    id: 'diretoria',
+    name: 'Diretoria',
+    emoji: '👔',
+    sub: 'Bloco Administrativo',
+    mapId: 'map-diretoria',
+    keywords: ['diretoria','direção','diretor','diretora'],
+    steps: [
+      'Entre pela porta principal na Rua João Fernandes Gama.',
+      'Siga em frente por cerca de 30 passos pelo corredor central.',
+      'Ao atingir o corredor administrativo, vire à direita.',
+      'Caminhe 20 passos. A Diretoria fica à sua esquerda, após a Secretaria.',
+      'Você chegou à Diretoria.'
+    ]
+  },
+  {
+    id: 'professores',
+    name: 'Sala de Professores',
+    emoji: '👩‍🏫',
+    sub: 'Bloco Administrativo',
+    mapId: 'map-professores',
+    keywords: ['professores','professoras','sala dos professores','sala de professores'],
+    steps: [
+      'Entre pela porta principal.',
+      'Siga pelo corredor central por 30 passos.',
+      'Vire à direita no corredor administrativo.',
+      'Continue por mais 30 passos até o final do corredor.',
+      'A Sala dos Professores é a última porta à sua esquerda.',
+      'Você chegou à Sala de Professores.'
+    ]
+  },
+  {
+    id: 'informatica',
+    name: 'Lab. de Informática',
+    emoji: '💻',
+    sub: 'Bloco Administrativo',
+    mapId: 'map-informatica',
+    keywords: ['informática','informatica','laboratório','laboratorio','computador','computadores'],
+    steps: [
+      'Entre pela porta principal.',
+      'Siga em frente por 30 passos.',
+      'No corredor administrativo, vire à direita.',
+      'Caminhe até o final do corredor, aproximadamente 40 passos.',
+      'O Laboratório de Informática está à sua esquerda, no canto.',
+      'Você chegou ao Laboratório de Informática.'
+    ]
+  },
+  {
+    id: 'sala1',
+    name: 'Sala de Aula 01',
+    emoji: '🏫',
+    sub: 'Bloco Sul',
+    mapId: 'map-sala1',
+    keywords: ['sala 1','sala 01','sala de aula 1','sala de aula 01','sala um','sala número 1'],
+    steps: [
+      'Entre pela porta principal.',
+      'A Sala 01 fica próxima à entrada.',
+      'Dê 5 passos para dentro e vire levemente à esquerda.',
+      'A Sala 01 estará imediatamente à sua frente.',
+      'Você chegou à Sala de Aula 01.'
+    ]
+  },
+  {
+    id: 'sala2',
+    name: 'Sala de Aula 02',
+    emoji: '🏫',
+    sub: 'Bloco Oeste',
+    mapId: 'map-sala2',
+    keywords: ['sala 2','sala 02','sala de aula 2','sala de aula 02','sala dois','sala número 2'],
+    steps: [
+      'Entre pela porta principal.',
+      'Siga em frente por 10 passos.',
+      'Vire à esquerda, seguindo o corredor lateral esquerdo.',
+      'Caminhe por 15 passos. A Sala 02 fica à sua direita.',
+      'Você chegou à Sala de Aula 02.'
+    ]
+  },
+  {
+    id: 'sala3',
+    name: 'Sala de Aula 03',
+    emoji: '🏫',
+    sub: 'Bloco Oeste',
+    mapId: 'map-sala3',
+    keywords: ['sala 3','sala 03','sala de aula 3','sala de aula 03','sala três','sala numero 3'],
+    steps: [
+      'Entre pela porta principal.',
+      'Siga em frente por 10 passos.',
+      'Vire à esquerda, seguindo o corredor lateral esquerdo.',
+      'Caminhe por 25 passos. A Sala 03 fica à sua direita.',
+      'Você chegou à Sala de Aula 03.'
+    ]
+  },
+  {
+    id: 'sala4',
+    name: 'Sala de Aula 04',
+    emoji: '🏫',
+    sub: 'Bloco Oeste',
+    mapId: 'map-sala4',
+    keywords: ['sala 4','sala 04','sala de aula 4','sala de aula 04','sala quatro'],
+    steps: [
+      'Entre pela porta principal.',
+      'Siga 10 passos e vire à esquerda no corredor lateral.',
+      'Caminhe 35 passos. A Sala 04 estará à sua direita.',
+      'Você chegou à Sala de Aula 04.'
+    ]
+  },
+  {
+    id: 'sala5',
+    name: 'Sala de Aula 05',
+    emoji: '🏫',
+    sub: 'Bloco Oeste',
+    mapId: 'map-sala5',
+    keywords: ['sala 5','sala 05','sala de aula 5','sala de aula 05','sala cinco'],
+    steps: [
+      'Entre pela porta principal e siga 10 passos.',
+      'Vire à esquerda no corredor lateral.',
+      'Caminhe 45 passos. A Sala 05 estará à sua direita.',
+      'Você chegou à Sala de Aula 05.'
+    ]
+  },
+  {
+    id: 'sala6',
+    name: 'Sala de Aula 06',
+    emoji: '🏫',
+    sub: 'Bloco Oeste',
+    mapId: 'map-sala6',
+    keywords: ['sala 6','sala 06','sala de aula 6','sala de aula 06','sala seis'],
+    steps: [
+      'Entre pela porta principal e siga 10 passos.',
+      'Vire à esquerda no corredor lateral.',
+      'Caminhe 55 passos. A Sala 06 estará à sua direita, próxima ao fundo.',
+      'Você chegou à Sala de Aula 06.'
+    ]
+  },
+  {
+    id: 'sala7',
+    name: 'Sala de Aula 07',
+    emoji: '🏫',
+    sub: 'Bloco Leste',
+    mapId: 'map-sala7',
+    keywords: ['sala 7','sala 07','sala de aula 7','sala de aula 07','sala sete'],
+    steps: [
+      'Entre pela porta principal e siga 10 passos.',
+      'Vire à direita no corredor lateral direito.',
+      'Caminhe 15 passos. A Sala 07 estará à sua esquerda.',
+      'Você chegou à Sala de Aula 07.'
+    ]
+  },
+  {
+    id: 'sala8',
+    name: 'Sala de Aula 08',
+    emoji: '🏫',
+    sub: 'Bloco Leste',
+    mapId: 'map-sala8',
+    keywords: ['sala 8','sala 08','sala de aula 8','sala de aula 08','sala oito'],
+    steps: [
+      'Entre pela porta principal e siga 10 passos.',
+      'Vire à direita no corredor lateral.',
+      'Caminhe 25 passos. A Sala 08 estará à sua esquerda.',
+      'Você chegou à Sala de Aula 08.'
+    ]
+  },
+  {
+    id: 'sala9',
+    name: 'Sala de Aula 09',
+    emoji: '🏫',
+    sub: 'Bloco Leste',
+    mapId: 'map-sala9',
+    keywords: ['sala 9','sala 09','sala de aula 9','sala de aula 09','sala nove'],
+    steps: [
+      'Entre pela porta principal e siga 10 passos.',
+      'Vire à direita no corredor lateral.',
+      'Caminhe 35 passos. A Sala 09 estará à sua esquerda.',
+      'Você chegou à Sala de Aula 09.'
+    ]
+  },
+  {
+    id: 'sala10',
+    name: 'Sala de Aula 10',
+    emoji: '🏫',
+    sub: 'Bloco Leste',
+    mapId: 'map-sala10',
+    keywords: ['sala 10','sala de aula 10','sala dez'],
+    steps: [
+      'Entre pela porta principal e siga 10 passos.',
+      'Vire à direita no corredor lateral.',
+      'Caminhe 45 passos. A Sala 10 estará à sua esquerda.',
+      'Você chegou à Sala de Aula 10.'
+    ]
+  },
+  {
+    id: 'sala11',
+    name: 'Sala de Aula 11',
+    emoji: '🏫',
+    sub: 'Bloco Leste',
+    mapId: 'map-sala11',
+    keywords: ['sala 11','sala de aula 11','sala onze'],
+    steps: [
+      'Entre pela porta principal e siga 10 passos.',
+      'Vire à direita no corredor lateral.',
+      'Caminhe 55 passos. A Sala 11 está no fundo, à sua esquerda.',
+      'Você chegou à Sala de Aula 11.'
+    ]
+  },
+  {
+    id: 'banheiro',
+    name: 'Banheiro',
+    emoji: '🚻',
+    sub: 'Com acessibilidade',
+    mapId: 'map-banheiro-esq',
+    keywords: ['banheiro','banheiros','wc','sanitário','sanitários','toalete','toaletes'],
+    steps: [
+      'Entre pela porta principal e siga 10 passos.',
+      'Vire à esquerda no corredor lateral.',
+      'Caminhe 40 passos. Os banheiros estão à sua direita no meio do bloco.',
+      'Há banheiros também no corredor direito, no mesmo ponto.',
+      'Você chegou aos banheiros. Há rampas de acessibilidade.'
+    ]
+  },
+  {
+    id: 'video',
+    name: 'Sala de Vídeo',
+    emoji: '📺',
+    sub: 'Bloco Administrativo',
+    mapId: 'map-video',
+    keywords: ['vídeo','video','sala de vídeo','sala de video','audiovisual'],
+    steps: [
+      'Entre pela porta principal.',
+      'Siga 30 passos e vire à direita no corredor administrativo.',
+      'Continue por 35 passos.',
+      'Vire à esquerda. A Sala de Vídeo estará à sua frente.',
+      'Você chegou à Sala de Vídeo.'
+    ]
+  },
+  {
+    id: 'patio',
+    name: 'Pátio',
+    emoji: '⛅',
+    sub: 'Área Central',
+    mapId: null,
+    keywords: ['pátio','patio','área central','area central','quadra'],
+    steps: [
+      'Entre pela porta principal.',
+      'Siga em frente por 20 passos.',
+      'O pátio descoberto está à sua frente, no centro da escola.',
+      'Você chegou ao Pátio Central.'
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════════
+//  VOICE SYNTHESIS
+// ══════════════════════════════════════════════════════
+let currentUtterance = null;
+const badge = document.getElementById('speaking-badge');
+
+function speak(text, onEnd) {
+  window.speechSynthesis.cancel();
+  currentUtterance = new SpeechSynthesisUtterance(text);
+  currentUtterance.lang = 'pt-BR';
+  currentUtterance.rate = 0.92;
+  currentUtterance.pitch = 1.0;
+  currentUtterance.volume = 1.0;
+
+  // Prefer a Brazilian Portuguese voice if available
+  const voices = window.speechSynthesis.getVoices();
+  const ptVoice = voices.find(v => v.lang === 'pt-BR') ||
+                  voices.find(v => v.lang.startsWith('pt'));
+  if (ptVoice) currentUtterance.voice = ptVoice;
+
+  badge.classList.add('visible');
+  currentUtterance.onend = () => {
+    badge.classList.remove('visible');
+    if (onEnd) onEnd();
+  };
+  currentUtterance.onerror = () => badge.classList.remove('visible');
+  window.speechSynthesis.speak(currentUtterance);
+}
+
+function speakSteps(steps) {
+  const intro = 'Atenção. Siga as instruções: ';
+  const full = intro + steps.map((s, i) => `Passo ${i+1}: ${s}`).join('. ');
+  speak(full);
+}
+
+// ══════════════════════════════════════════════════════
+//  SPEECH RECOGNITION
+// ══════════════════════════════════════════════════════
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let isListening = false;
+
+const micBtn = document.getElementById('mic-btn');
+const micSection = document.getElementById('mic-section');
+const micLabel = document.getElementById('mic-label');
+const transcriptBox = document.getElementById('transcript-box');
+
+function setupRecognition() {
+  if (!SpeechRecognition) return null;
+  const r = new SpeechRecognition();
+  r.lang = 'pt-BR';
+  r.interimResults = true;
+  r.maxAlternatives = 3;
+  r.continuous = false;
+
+  r.onstart = () => {
+    isListening = true;
+    micBtn.classList.add('listening');
+    micBtn.setAttribute('aria-pressed', 'true');
+    micSection.classList.add('listening');
+    micLabel.textContent = 'Ouvindo…';
+    transcriptBox.textContent = '';
+    transcriptBox.classList.add('visible');
+    setStatus('Ouvindo…', true);
+  };
+
+  r.onresult = (e) => {
+    const interim = Array.from(e.results)
+      .map(r => r[0].transcript).join('');
+    transcriptBox.textContent = `"${interim}"`;
+    if (e.results[e.results.length - 1].isFinal) {
+      const transcript = e.results[e.results.length - 1][0].transcript.toLowerCase().trim();
+      handleVoiceInput(transcript);
+    }
+  };
+
+  r.onend = () => {
+    isListening = false;
+    micBtn.classList.remove('listening');
+    micBtn.setAttribute('aria-pressed', 'false');
+    micSection.classList.remove('listening');
+    micLabel.textContent = 'Toque para falar o destino';
+    setStatus('Pronto para navegar');
+  };
+
+  r.onerror = (e) => {
+    console.warn('Speech error:', e.error);
+    micLabel.textContent = 'Erro. Tente novamente.';
+    isListening = false;
+    micBtn.classList.remove('listening');
+    micSection.classList.remove('listening');
+    setStatus('Erro de microfone');
+    speak('Não consegui ouvir. Por favor, tente novamente.');
+  };
+
+  return r;
+}
+
+micBtn.addEventListener('click', () => {
+  window.speechSynthesis.cancel();
+  if (isListening) {
+    recognition && recognition.stop();
+    return;
+  }
+  if (!SpeechRecognition) {
+    speak('Reconhecimento de voz não disponível neste navegador. Por favor, toque em um dos botões de destino na tela.');
+    return;
+  }
+  recognition = setupRecognition();
+  try { recognition.start(); }
+  catch(e) { console.warn(e); }
+});
+
+// ══════════════════════════════════════════════════════
+//  MATCHING
+// ══════════════════════════════════════════════════════
+function findLocation(text) {
+  const t = text.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, '');
+  return LOCATIONS.find(loc =>
+    loc.keywords.some(kw => {
+      const k = kw.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return t.includes(k);
+    })
+  );
+}
+
+function handleVoiceInput(text) {
+  const loc = findLocation(text);
+  if (loc) {
+    navigateTo(loc);
+  } else {
+    speak(`Não encontrei o local "${text}". Diga, por exemplo: secretaria, sala de aula 3, banheiro, ou pátio.`);
+    setStatus('Local não encontrado');
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════
+let currentLoc = null;
+
+function navigateTo(loc) {
+  currentLoc = loc;
+
+  // Update directions UI
+  document.getElementById('dest-icon').textContent = loc.emoji;
+  document.getElementById('dest-name').textContent = loc.name;
+  document.getElementById('dest-dist').textContent = loc.sub;
+
+  const list = document.getElementById('steps-list');
+  list.innerHTML = '';
+  loc.steps.forEach((step, i) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="step-num">${i + 1}</span><span>${step}</span>`;
+    list.appendChild(li);
+  });
+
+  document.getElementById('directions-section').classList.add('visible');
+
+  // Highlight map room
+  document.querySelectorAll('.room-hl').forEach(el => {
+    el.classList.remove('room-hl');
+    el.classList.add('room');
+  });
+  document.querySelectorAll('.room-label-hl').forEach(el => {
+    el.classList.remove('room-label-hl');
+    el.classList.add('room-label');
+  });
+  if (loc.mapId) {
+    const mapEl = document.getElementById(loc.mapId);
+    if (mapEl) {
+      mapEl.classList.remove('room');
+      mapEl.classList.add('room-hl');
+    }
+  }
+  document.getElementById('person-marker').style.display = 'block';
+
+  setStatus(`Navegando para: ${loc.name}`);
+  speakSteps(loc.steps);
+
+  // Scroll to directions
+  setTimeout(() => {
+    document.getElementById('directions-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+// ══════════════════════════════════════════════════════
+//  REPEAT BUTTON
+// ══════════════════════════════════════════════════════
+document.getElementById('repeat-btn').addEventListener('click', () => {
+  if (currentLoc) speakSteps(currentLoc.steps);
+});
+
+// ══════════════════════════════════════════════════════
+//  STATUS BAR
+// ══════════════════════════════════════════════════════
+function setStatus(msg, active = false) {
+  document.getElementById('status-text').textContent = msg;
+  const dot = document.getElementById('status-dot');
+  dot.classList.toggle('inactive', !active);
+}
+
+// ══════════════════════════════════════════════════════
+//  BUILD LOCATION GRID
+// ══════════════════════════════════════════════════════
+const grid = document.getElementById('loc-grid');
+LOCATIONS.forEach(loc => {
+  const btn = document.createElement('button');
+  btn.className = 'loc-btn';
+  btn.setAttribute('role', 'listitem');
+  btn.setAttribute('aria-label', `Ir para ${loc.name}`);
+  btn.innerHTML = `
+    <span class="emoji" aria-hidden="true">${loc.emoji}</span>
+    <span class="name">${loc.name}</span>
+    <span class="sub">${loc.sub}</span>
+  `;
+  btn.addEventListener('click', () => navigateTo(loc));
+  grid.appendChild(btn);
+});
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  // Pre-load voices
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', () => {
+    window.speechSynthesis.getVoices();
+  });
+
+  if (!SpeechRecognition) {
+    micLabel.textContent = 'Use os botões abaixo';
+    micBtn.style.opacity = '0.5';
+    micBtn.style.cursor = 'default';
+    micBtn.setAttribute('aria-label', 'Reconhecimento de voz indisponível. Use os botões abaixo.');
+  }
+
+  // Welcome message (short delay for TTS to be ready)
+  setTimeout(() => {
+    speak('Bem-vindo ao GPS do Colégio Estadual Professora Silva Ferreira de Brito. Toque no botão central e diga o local que deseja ir, ou escolha um destino pelos botões na tela.');
+  }, 800);
+});
+</script>
+
+</body>
+</html>
